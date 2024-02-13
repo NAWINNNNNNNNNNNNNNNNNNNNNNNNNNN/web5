@@ -1,0 +1,17 @@
+
+.footer-CA{
+    background: #000;
+    width: 100vw;
+    padding: 20px 0;
+    text-align: center;
+}
+.footer-CA p{
+    font-size: 14px;
+    word-spacing: 2px;
+    text-transform: capitalize;
+}
+.footer-CA span{
+    text-transform: uppercase;
+    opacity: .4;
+    font-weight: 200;
+}
