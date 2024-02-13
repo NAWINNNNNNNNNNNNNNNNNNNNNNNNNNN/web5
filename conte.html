@@ -15,6 +15,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link rel="stylesheet" type="text/css" href="button.css" />
     <title>Burathat</title>
     <style>
         body {
@@ -186,4 +187,17 @@
                                 border-right: 0.08em solid #666
                             }
                         </style>
+                        <div class="loader"></div>
 </body>
+<script>
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+      
+        loader.classList.add("loader--hidden");
+      
+        loader.addEventListener("transitionend", () => {
+          document.body.removeChild(loader);
+        });
+      });
+      
+  </script>
