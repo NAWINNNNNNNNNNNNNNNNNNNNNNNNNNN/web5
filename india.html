@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" type="text/css" href="button.css" />
 
 </head>
 <body>
@@ -61,5 +61,18 @@
   </div>
 
 </div>
+<div class="loader"></div>
 </body>
+<script>
+  window.addEventListener("load", () => {
+      const loader = document.querySelector(".loader");
+    
+      loader.classList.add("loader--hidden");
+    
+      loader.addEventListener("transitionend", () => {
+        document.body.removeChild(loader);
+      });
+    });
+    
+</script>
 </html>
