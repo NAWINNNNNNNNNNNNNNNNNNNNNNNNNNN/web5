@@ -17,7 +17,7 @@
 main {
     display: grid;
     grid-template-columns: 50% 50%;
-    background-image: url(https://i.gifer.com/SjDr.gif);
+    background-image: url(https://media1.giphy.com/media/t2aAdTgnU9Ie6jvG0W/giphy.gif);
 }
 
 .left-box {
