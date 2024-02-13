@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 <link rel="icon" href="./logo.png">
+<link rel="stylesheet" type="text/css" href="button.css" />
     <link rel="stylesheet" href="xzx.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
 </head>
@@ -45,7 +46,20 @@
             height="100%">
             <marquee direction="left" style="background-color: aliceblue;"> รหัสผ่านคือ เลขประจำตัว 010 เลขบัตรประชาชน 1149900993001                      รหัสผ่านคือ เลขประจำตัว tccom เลขบัตรประชาชน 12345</marquee>
         </div>
+        <div class="loader"></div>
     </main>
 </body>
+<script>
+    window.addEventListener("load", () => {
+        const loader = document.querySelector(".loader");
+      
+        loader.classList.add("loader--hidden");
+      
+        loader.addEventListener("transitionend", () => {
+          document.body.removeChild(loader);
+        });
+      });
+      
+  </script>
 <script src="script.js" charset="utf-8"></script>
 </html>
