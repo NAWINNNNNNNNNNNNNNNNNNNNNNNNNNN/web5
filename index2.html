@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
        <title>TC CHAINAT</title>
     <link rel="icon" href="./logo.png">
+    <link rel="stylesheet" type="text/css" href="button.css" />
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,5 +76,18 @@
             <p>Made with ❤️ by <span>BURATHAT 010</span></p>
         </div>
     </footer>
+    <div class="loader"></div>
 </body>
+<script>
+  window.addEventListener("load", () => {
+      const loader = document.querySelector(".loader");
+    
+      loader.classList.add("loader--hidden");
+    
+      loader.addEventListener("transitionend", () => {
+        document.body.removeChild(loader);
+      });
+    });
+    
+</script>
 </html>
