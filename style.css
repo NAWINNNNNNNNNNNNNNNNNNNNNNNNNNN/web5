@@ -110,7 +110,7 @@
     cursor: pointer;
   }
   .box1 {
-    background-image: url("ccd524013eb3e288e92c25d9ca73c6bc.gif");
+    background-image: url("https://miro.medium.com/v2/resize:fit:1024/1*ZVXqYtYRRL4X4OlOkD8UDA.gif");
   }
   .box2 {
     background-image: url("tenor.gif");
@@ -176,12 +176,13 @@
   }
 
   footer {
-    text-align: center;
-    padding: 3px;
-    background-color: rgb(80, 80, 80);
-    color: white;
-    display: block;
-    background-image: url("https://i.pinimg.com/originals/11/3e/c6/113ec6150230ca9d119fcae74ea4ad3a.gif");
+    position: absolute;
+    background: #111;
+    height: auto;
+    width: 100vw;
+    font-family: "Open Sans";
+    padding-top: 10px;
+    color: #fff;
   }
   
   .img {
