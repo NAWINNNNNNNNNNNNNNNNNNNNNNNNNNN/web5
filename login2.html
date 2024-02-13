@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="login2.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" type="text/css" href="button.css" />
   <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
   
 
@@ -38,9 +39,19 @@
     </center>
     </div>
   </div>
-
-
-
 </div>
+<div class="loader"></div>
 </body>
+<script>
+  window.addEventListener("load", () => {
+      const loader = document.querySelector(".loader");
+    
+      loader.classList.add("loader--hidden");
+    
+      loader.addEventListener("transitionend", () => {
+        document.body.removeChild(loader);
+      });
+    });
+    
+</script>
 </html>
