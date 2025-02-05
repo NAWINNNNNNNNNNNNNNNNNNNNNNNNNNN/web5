@@ -1,93 +1,492 @@
+
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="footer.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-       <title>TC CHAINAT</title>
-    <link rel="icon" href="./logo.png">
-    <link rel="stylesheet" type="text/css" href="button.css" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
-  
+    <title>ประวัติเช็คชื่อห้องเน็ต</title>
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/469197883_616898757336956_5565555769048692111_n.jpg" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(to bottom, #a8c0ff, #3f2b96);
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            color: #ffffff;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #e84118;
+            transform: scale(1.05);
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        th {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #333;
+        }
+        tr {
+            transition: background-color 0.3s;
+        }
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        @media (max-width: 600px) {
+            table, button {
+                width: 100%;
+                font-size: 14px;
+            }
+        }
+        /* Snowfall effect */
+        .snow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow clicks through snow */
+        }
+        .snowflake {
+            position: absolute;
+            color: #ffffff;
+            opacity: 0.8;
+            font-size: 1em;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+        body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* ทำให้หน้าเว็บยืดหยุ่นสูงสุด */
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin-top: auto; /* ทำให้ footer เลื่อนไปที่ด้านล่างสุด */
+    font-size: 14px;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer p:first-child {
+    font-weight: bold;
+}
+
+footer p:last-child {
+    color: #f44336;
+}
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCsirKBE3O9HpO9YD9BoiVp8iua5NUFWDE",
+            authDomain: "sample-firebase-ai-app-23a31.firebaseapp.com",
+            databaseURL: "https://sample-firebase-ai-app-23a31-default-rtdb.firebaseio.com",
+            projectId: "sample-firebase-ai-app-23a31",
+            storageBucket: "sample-firebase-ai-app-23a31.appspot.com",
+            messagingSenderId: "214209088155",
+            appId: "1:214209088155:web:a854abf5ab5ae9b7a3543e"    
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        function loadCheckIns() {
+            const checkInsRef = ref(database, 'student-checkins');
+            onValue(checkInsRef, (snapshot) => {
+                const data = snapshot.val();
+                const table = document.getElementById('checkinTable');
+                table.innerHTML = `
+                    <tr>
+                        <th>เลขที่นักเรียน</th>
+                        <th>ชื่อนักเรียน</th>
+                        <th>เวลาเช็คชื่อ</th>
+                    </tr>
+                `; // Reset table and add header
+
+                if (data) {
+                    for (const key in data) {
+                        const row = table.insertRow();
+                        row.insertCell(0).innerText = data[key].StudentNumber || "N/A";
+                        row.insertCell(1).innerText = data[key].StudentName || "N/A";
+                        row.insertCell(2).innerText = data[key].CheckInTime || "N/A";
+                    }
+                } else {
+                    const row = table.insertRow();
+                    const cell = row.insertCell(0);
+                    cell.colSpan = 3;
+                    cell.innerText = "ไม่พบข้อมูล";
+                }
+            });
+        }
+
+        function loadCheckOuts() {
+            const checkOutsRef = ref(database, 'student-checkout');
+            onValue(checkOutsRef, (snapshot) => {
+                const data = snapshot.val();
+                const table = document.getElementById('checkoutTable');
+                table.innerHTML = `
+                    <tr>
+                        <th>เลขที่นักเรียน</th>
+                        <th>ชื่อนักเรียน</th>
+                        <th>เวลาเช็คชื่อออก</th>
+                    </tr>
+                `; // Reset table and add header
+
+                if (data) {
+                    for (const key in data) {
+                        const row = table.insertRow();
+                        row.insertCell(0).innerText = data[key].StudentNumber || "N/A";
+                        row.insertCell(1).innerText = data[key].StudentName || "N/A";
+                        row.insertCell(2).innerText = data[key].CheckInTime || "N/A"; // CheckOutTime แสดงผลที่นี่
+                    }
+                } else {
+                    const row = table.insertRow();
+                    const cell = row.insertCell(0);
+                    cell.colSpan = 3;
+                    cell.innerText = "ไม่พบข้อมูล";
+                }
+            });
+        }
+
+
+        // Snow effect function
+        function createSnowflakes() {
+            const snowContainer = document.createElement('div');
+            snowContainer.classList.add('snow');
+            document.body.appendChild(snowContainer);
+
+            for (let i = 0; i < 200; i++) { // Increased snowflakes
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerText = '❄'; // Snowflake character
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.fontSize = Math.random() * 1 + 0.5 + 'em'; // Random size
+                snowflake.style.color = `rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`; // Random color variation
+                snowflake.style.animationDuration = Math.random() * 5 + 5 + 's'; // Random fall duration
+                snowflake.style.animationDelay = Math.random() * 5 + 's'; // Random start time
+                snowContainer.appendChild(snowflake);
+            }
+        }
+       // สร้างฟังก์ชันโหลดข้อมูลเช็คอินและเช็คเอาต์ตามเดือน
+function loadChartData() {
+    const checkInsRef = ref(database, 'student-checkins');
+    const checkOutsRef = ref(database, 'student-checkout');
+    let checkInsCount = new Array(12).fill(0);  // จำนวนเช็คอิน 12 เดือน
+    let checkOutsCount = new Array(12).fill(0);  // จำนวนเช็คเอาต์ 12 เดือน
+
+    // นับจำนวนเช็คอินในแต่ละเดือน
+    onValue(checkInsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            for (const key in data) {
+                const checkInTime = new Date(data[key].CheckInTime);
+                const month = checkInTime.getMonth();  // ดึงเดือนจากวันที่เช็คอิน
+                checkInsCount[month] += 1;  // เพิ่มจำนวนเช็คอินในเดือนนั้น
+            }
+        }
+        updateChart(checkInsCount, checkOutsCount);
+    });
+
+    // นับจำนวนเช็คเอาต์ในแต่ละเดือน
+    onValue(checkOutsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            for (const key in data) {
+                const checkOutTime = new Date(data[key].CheckOutTime);
+                const month = checkOutTime.getMonth();  // ดึงเดือนจากวันที่เช็คเอาต์
+                checkOutsCount[month] += 1;  // เพิ่มจำนวนเช็คเอาต์ในเดือนนั้น
+            }
+        }
+        updateChart(checkInsCount, checkOutsCount);
+    });
+}
+
+// ฟังก์ชันสร้างหรืออัปเดตกราฟ
+let myChart;
+function updateChart(checkIns, checkOuts) {
+    const ctx = document.getElementById('checkinChart').getContext('2d');
+    if (myChart) {
+        myChart.data.datasets[0].data = checkIns;
+        myChart.data.datasets[1].data = checkOuts;
+        myChart.update();
+    } else {
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+                ],
+                datasets: [{
+                    label: 'เช็คอิน',
+                    data: checkIns,
+                    backgroundColor: '#4caf50',
+                    borderColor: '#388e3c',
+                    borderWidth: 1
+                }, {
+                    label: 'เช็คเอาต์',
+                    data: checkOuts,
+                    backgroundColor: '#ff5722',
+                    borderColor: '#d32f2f',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1  // กำหนดระยะห่างระหว่าง ticks
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+
+
+window.onload = function() {
+    loadCheckIns();
+    loadCheckOuts();
+    loadChartData();
+    createSnowflakes();
+
+};
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
-<div class="container bg">
-  <div class="navBar">
-    <div class="logo">
-      <a href="#">
-        <i class="fas fa-suitcase-rolling"></i>
-      </a>
-    </div>
-    <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="http://www2.chainat.ac.th/webpage/index01.php">วิทยาลัยเทคนิคชัยนาท</a></li>
-      <li><a href="https://www.facebook.com/profile.php?id=100092171929490">แผนกเทคโนโลยีคอมพิวเตอร์ วิทยาลัยเทคนิคชัยนาท </a></li>
-      <li><a href="https://img2.pic.in.th/pic/Screenshot-2024-02-13-235636.png">Sitemap Website</a></li>
-      <li><a href="https://burathat.vercel.app/">Contact นายบูรธัส พ่วงไพบูลย์</a></li>
-    </ul>
-  </div>
 
-  <div class="content">
-    <div class="phuket" style="width:50%;">
-      <div class="tnx">
-        <h2><i class="fas fa-map-marker-alt"></i>COMPUTER TECHNOLOGY</h2>
-      </div>
-      <div class="txt">
-        <h1>Hello Teacher Chatchai</h1>
-      </div>
-      <p></p>
+ 
+
+
+    <h1>ระบบ เช็ครายชื่อนักเรียนเข้าห้องอินเตอร์เน็ต</h1>
    
-    </div>
-    <div class="card" style="width:50%;">
-      <a href="New.html" target="_blank">
-        <div class="box1">
-          <h2>New</h2>
-        </div>
-      </a>
-      <a href="game.html" target="_blank">
-        <div class="box2">
-          <h2>New Game</h2>
-        </div>
-      </a>
-      <a href="Sport.html" target="_blank">
-        <div class="box3">
-          <h2>Sport</h2>
-        </div>
-      </a>
-      <a href="india.html" target="_blank">
-        <div class="box4">
-          <h2>Street food india </h2>
-        </div>
-      </a>
-    </div>
-     
-    <center><iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100092171929490&tabs=timeline&width=300&height=150&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-      <img src="logo.png" alt="Avatar" width="300" height="150">
-</center>
-  </div>
-  
-</div>            
-    <footer>
-        <div class="footer-CA">
-            <p>Made with ❤️ by <span>BURATHAT 010</span></p>
-        </div>
-    </footer>
-    <div class="loader"></div>
-</body>
+
+    <h2>ค้นหานักเรียน</h2>
+   <center></center> <div style="text-align: center; margin-bottom: 20px;">
+        <input type="text" id="searchInput" placeholder="ค้นหาชื่อนักเรียน" style="
+            width: 60%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;">
+      <button onclick="searchStudent()" style="
+            padding: 10px 15px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s, transform 0.2s;">
+            ค้นหา
+            <center></center>
+        </button>
+    </div></center>
+    
+    <script>
+        function searchStudent() {
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const checkInRows = document.querySelectorAll("#checkinTable tr:not(:first-child)");
+            const checkOutRows = document.querySelectorAll("#checkoutTable tr:not(:first-child)");
+    
+            checkInRows.forEach(row => {
+                const name = row.cells[1].innerText.toLowerCase();
+                row.style.display = name.includes(searchInput) ? '' : 'none';
+            });
+    
+            checkOutRows.forEach(row => {
+                const name = row.cells[1].innerText.toLowerCase();
+                row.style.display = name.includes(searchInput) ? '' : 'none';
+            });
+        }
+    </script>
+ 
+
+ <div style="text-align: center; margin-bottom: 20px;">
+    <input type="text" id="searchInput" placeholder="ค้นหาชื่อนักเรียน" style="
+        width: 60%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;">
+    <input type="date" id="dateInput" style="
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;">
+    <button onclick="XXX()" style="
+        padding: 10px 15px;
+        background-color: #ff4757;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: background-color 0.3s, transform 0.2s;">
+        ค้นหา
+    </button>
+</div>
+
 <script>
-  window.addEventListener("load", () => {
-      const loader = document.querySelector(".loader");
+function XXX() {
+    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const dateInput = document.getElementById("dateInput").value;
     
-      loader.classList.add("loader--hidden");
-    
-      loader.addEventListener("transitionend", () => {
-        document.body.removeChild(loader);
-      });
+    // ตรวจสอบว่าเลือกวันที่หรือไม่
+    if (!dateInput) {
+        alert("กรุณาเลือกวันที่");
+        return;
+    }
+
+    const selectedDate = new Date(dateInput); // แปลงเป็นวันที่
+    const selectedDateString = selectedDate.toDateString(); // แปลงเป็นวันที่ที่ไม่มีเวลา
+
+    const checkInRows = document.querySelectorAll("#checkinTable tr:not(:first-child)");
+    const checkOutRows = document.querySelectorAll("#checkoutTable tr:not(:first-child)");
+
+    // กรองข้อมูลในตารางเช็คอิน
+    checkInRows.forEach(row => {
+        const studentName = row.cells[1].innerText.toLowerCase();
+        const checkInTime = new Date(row.cells[2].innerText); // ดึงเวลาเช็คอินจากเซลล์
+        const checkInDateString = checkInTime.toDateString(); // แปลงเวลาเช็คอินเป็นวันที่
+
+        // ตรวจสอบชื่อและวันที่
+        if (studentName.includes(searchInput) && checkInDateString === selectedDateString) {
+            row.style.display = ''; // แสดงแถวที่ตรงกับชื่อและวันที่
+        } else {
+            row.style.display = 'none'; // ซ่อนแถวที่ไม่ตรงกับชื่อและวันที่
+        }
     });
-    
+
+    // กรองข้อมูลในตารางเช็คเอาต์
+    checkOutRows.forEach(row => {
+        const studentName = row.cells[1].innerText.toLowerCase();
+        const checkOutTime = new Date(row.cells[2].innerText); // ดึงเวลาเช็คเอาต์จากเซลล์
+        const checkOutDateString = checkOutTime.toDateString(); // แปลงเวลาเช็คเอาต์เป็นวันที่
+
+        // ตรวจสอบชื่อและวันที่
+        if (studentName.includes(searchInput) && checkOutDateString === selectedDateString) {
+            row.style.display = ''; // แสดงแถวที่ตรงกับชื่อและวันที่
+        } else {
+            row.style.display = 'none'; // ซ่อนแถวที่ไม่ตรงกับชื่อและวันที่
+        }
+    });
+}
+
 </script>
+
+    <h2>ประวัติเช็คชื่อ</h2>
+    <table id="checkinTable">
+        <tr>
+            <th>เลขที่นักเรียน</th>
+            <th>ชื่อนักเรียน</th>
+            <th>เวลาเช็คชื่อ</th>
+        </tr>
+    </table>
+
+    <h2>ประวัติเช็คชื่อออก</h2>
+    <table id="checkoutTable">
+        <tr>
+            <th>เลขที่นักเรียน</th>
+            <th>ชื่อนักเรียน</th>
+            <th>เวลาเช็คชื่อออก</th>
+        </tr>
+    </table>
+
+
+    <h2>กราฟแสดงจำนวนเช็คเข้าห้องอินเตอร์เน็ต ต่อเดือน</h2>
+    <canvas id="checkinChart" style="width: 100%; height: 300px;"></canvas>
+    <footer>
+        <p>© 2024 Seanual</p>
+        <p>Made with ❤️ by Burathat</p>
+    </footer>
+    
+</body>
 </html>
